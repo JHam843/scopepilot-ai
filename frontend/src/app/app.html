@@ -3,7 +3,9 @@
   <aside class="sidebar" aria-label="Workspace navigation">
     <a class="brand" routerLink="/projects"
       ><span class="brand-icon">S<span>↗</span></span
-      ><span>ScopePilot<span class="brand-sub">FROM IDEA TO CLARITY</span></span></a
+      ><span
+        >ScopePilot<span class="brand-sub">FROM IDEA TO CLARITY</span></span
+      ></a
     >
     <p class="nav-label">YOUR WORKSPACE</p>
     <nav>
@@ -22,7 +24,7 @@
       <p>Turn a rough request into work you can review, refine, and share.</p>
     </div>
     <div class="sidebar-bottom">
-      <span class="avatar">SP</span>
+      <span class="avatar">Jamal Hamilton</span>
       <div>Portfolio workspace<small>Angular + ASP.NET Core</small></div>
     </div>
   </aside>
@@ -49,20 +51,18 @@
     </header>
     <main id="main-content" tabindex="-1">
       @if (error()) {
-        <p class="alert error" role="alert">{{ error() }}</p>
-      }
-      @if (storage.warning()) {
-        <p class="alert warning" role="status">{{ storage.warning() }}</p>
+      <p class="alert error" role="alert">{{ error() }}</p>
+      } @if (storage.warning()) {
+      <p class="alert warning" role="status">{{ storage.warning() }}</p>
       }
       <router-outlet />
     </main>
     <footer>
       ScopePilot AI <span>Built for the work before the work.</span
-      ><span class="footer-mode">{{
-        workspace.mode() === 'api'
-          ? 'Projects connected to your .NET API'
-          : 'Sample projects stored in this browser'
-      }}</span>
+      ><span class="footer-mode"
+        >{{ workspace.mode() === 'api' ? 'Projects connected to your .NET API' :
+        'Sample projects stored in this browser' }}</span
+      >
     </footer>
   </div>
 </div>

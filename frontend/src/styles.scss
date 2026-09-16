@@ -1,4 +1,4 @@
-@use 'sass:color';
+@use "sass:color";
 :root {
   color-scheme: light;
   --ink: #223431;
@@ -10,7 +10,7 @@
   --lime: #d7edb2;
   --green: #315d48;
   --error: #a93232;
-  font-family: Inter, 'Segoe UI', Arial, sans-serif;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
   font-size: 14px;
   color: var(--ink);
   background: var(--canvas);
@@ -313,9 +313,9 @@ ul {
   margin-top: 6px;
 }
 .avatar {
-  width: 33px;
-  height: 33px;
-  border-radius: 50%;
+  width: 109px;
+  height: 50px;
+  border-radius: 5%;
   display: grid;
   place-items: center;
   background: #385044;
@@ -529,7 +529,7 @@ footer > span {
   overflow: hidden;
 }
 .stat:after {
-  content: '';
+  content: "";
   position: absolute;
   width: 64px;
   height: 64px;
@@ -648,17 +648,17 @@ footer > span {
   white-space: nowrap;
 }
 .badge[data-status]:before {
-  content: '';
+  content: "";
   width: 5px;
   height: 5px;
   border-radius: 50%;
   background: currentColor;
 }
-.badge[data-status='InReview'] {
+.badge[data-status="InReview"] {
   color: #a7803b;
   background: #fbf3df;
 }
-.badge[data-status='Final'] {
+.badge[data-status="Final"] {
   color: #4d795c;
   background: #e6f2e9;
 }
