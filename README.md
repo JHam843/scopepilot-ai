@@ -6,8 +6,6 @@ ScopePilot AI is a full-stack portfolio application built with **Angular, TypeSc
 
 The current version combines a working .NET project API with a **clearly labeled mock scope generator**. You can explore the complete frontend workflow without an AI API key. Live AI integration is a planned extension.
 
-![ScopePilot project dashboard](docs/screenshots/dashboard.png)
-
 ## Features
 
 - **Project dashboard:** browse recent projects, search by project or client, and filter by Draft, In review, or Final status.
@@ -23,15 +21,15 @@ The current version combines a working .NET project API with a **clearly labeled
 
 ## Technology stack
 
-| Area | Technologies |
-| --- | --- |
-| Frontend | Angular 22, TypeScript 6, standalone components, signals, reactive forms, Angular Router |
-| Styling | SCSS, responsive layouts, keyboard-focus styles |
-| API communication | Angular HttpClient, RxJS, development proxy |
-| Backend | C#, .NET 10, ASP.NET Core Web API, controllers, dependency injection |
-| Database | SQLite, Entity Framework Core 10, migrations, seed data |
-| Frontend verification | Vitest, Angular HTTP testing utilities, Playwright |
-| Development tools | Git, npm, .NET CLI, Visual Studio Code |
+| Area                  | Technologies                                                                             |
+| --------------------- | ---------------------------------------------------------------------------------------- |
+| Frontend              | Angular 22, TypeScript 6, standalone components, signals, reactive forms, Angular Router |
+| Styling               | SCSS, responsive layouts, keyboard-focus styles                                          |
+| API communication     | Angular HttpClient, RxJS, development proxy                                              |
+| Backend               | C#, .NET 10, ASP.NET Core Web API, controllers, dependency injection                     |
+| Database              | SQLite, Entity Framework Core 10, migrations, seed data                                  |
+| Frontend verification | Vitest, Angular HTTP testing utilities, Playwright                                       |
+| Development tools     | Git, npm, .NET CLI, Visual Studio Code                                                   |
 
 ## Architecture and current implementation
 
@@ -39,16 +37,16 @@ The Angular application handles intake, editing, navigation, previews, and expor
 
 Scope documents and version snapshots currently live in browser storage. They are separate from the project records stored by the API.
 
-| Capability | Current implementation |
-| --- | --- |
-| Project metadata in .NET API mode | ASP.NET Core API and SQLite |
-| Project metadata in Sample workspace mode | Browser localStorage |
-| Scope generation | Deterministic templates selected from the project text |
-| Clarifying questions | Local keyword rules; suggestions require review |
-| Scope drafts and versions | Browser localStorage, separated by workspace and project |
-| Effort estimate | Manually entered and reviewed by the user |
-| Version comparison | Two saved snapshots displayed side by side |
-| Proposal export | Markdown generated from a selected saved snapshot |
+| Capability                                | Current implementation                                   |
+| ----------------------------------------- | -------------------------------------------------------- |
+| Project metadata in .NET API mode         | ASP.NET Core API and SQLite                              |
+| Project metadata in Sample workspace mode | Browser localStorage                                     |
+| Scope generation                          | Deterministic templates selected from the project text   |
+| Clarifying questions                      | Local keyword rules; suggestions require review          |
+| Scope drafts and versions                 | Browser localStorage, separated by workspace and project |
+| Effort estimate                           | Manually entered and reviewed by the user                |
+| Version comparison                        | Two saved snapshots displayed side by side               |
+| Proposal export                           | Markdown generated from a selected saved snapshot        |
 
 An API failure remains visible until the user explicitly selects the sample workspace. The application does not silently switch where it saves project data.
 
@@ -58,22 +56,22 @@ Browser data belongs to a particular browser profile and origin. Clearing it rem
 
 Keep this README at the repository root, beside `frontend` and `backend`.
 
-| Location | Responsibility |
-| --- | --- |
-| `frontend/` | Angular application, dependencies, and build configuration |
-| `frontend/src/app/core/` | Models, API services, storage, mock generation, export, and navigation guard |
-| `frontend/src/app/features/dashboard/` | Project list, search, status filters, and examples |
-| `frontend/src/app/features/intake/` | Multi-step project intake |
-| `frontend/src/app/features/editor/` | Scope editor, stories, phases, questions, and proposal tab |
-| `frontend/src/app/features/versions/` | Version list and comparison |
-| `frontend/src/app/shared/` | Reusable proposal preview |
-| `frontend/e2e/` | Playwright workflow tests |
-| `backend/ScopePilot.Api/Controllers/` | HTTP endpoints |
-| `backend/ScopePilot.Api/Contracts/` | Request DTOs and server-side validation |
-| `backend/ScopePilot.Api/Models/` | Persisted project model |
-| `backend/ScopePilot.Api/Data/` | EF Core database context and sample seeding |
-| `backend/ScopePilot.Api/Migrations/` | Database schema migrations |
-| `docs/` | Frontend walkthrough, decision log, and screenshots |
+| Location                               | Responsibility                                                               |
+| -------------------------------------- | ---------------------------------------------------------------------------- |
+| `frontend/`                            | Angular application, dependencies, and build configuration                   |
+| `frontend/src/app/core/`               | Models, API services, storage, mock generation, export, and navigation guard |
+| `frontend/src/app/features/dashboard/` | Project list, search, status filters, and examples                           |
+| `frontend/src/app/features/intake/`    | Multi-step project intake                                                    |
+| `frontend/src/app/features/editor/`    | Scope editor, stories, phases, questions, and proposal tab                   |
+| `frontend/src/app/features/versions/`  | Version list and comparison                                                  |
+| `frontend/src/app/shared/`             | Reusable proposal preview                                                    |
+| `frontend/e2e/`                        | Playwright workflow tests                                                    |
+| `backend/ScopePilot.Api/Controllers/`  | HTTP endpoints                                                               |
+| `backend/ScopePilot.Api/Contracts/`    | Request DTOs and server-side validation                                      |
+| `backend/ScopePilot.Api/Models/`       | Persisted project model                                                      |
+| `backend/ScopePilot.Api/Data/`         | EF Core database context and sample seeding                                  |
+| `backend/ScopePilot.Api/Migrations/`   | Database schema migrations                                                   |
+| `docs/`                                | Frontend walkthrough, decision log, and screenshots                          |
 
 ## Run locally
 
@@ -161,22 +159,22 @@ Project metadata and scope content have separate save actions. After changing th
 
 Base address for local development: `http://127.0.0.1:5050`.
 
-| Method | Endpoint | Result |
-| --- | --- | --- |
-| GET | `/` | Application name and running status |
-| GET | `/api/projects` | Project list |
-| GET | `/api/projects/{id}` | Project record, or 404 when absent |
-| POST | `/api/projects` | 201 with the created project |
-| PUT | `/api/projects/{id}` | 204 with no response body, or 404 when absent |
+| Method | Endpoint             | Result                                        |
+| ------ | -------------------- | --------------------------------------------- |
+| GET    | `/`                  | Application name and running status           |
+| GET    | `/api/projects`      | Project list                                  |
+| GET    | `/api/projects/{id}` | Project record, or 404 when absent            |
+| POST   | `/api/projects`      | 201 with the created project                  |
+| PUT    | `/api/projects/{id}` | 204 with no response body, or 404 when absent |
 
 Project IDs are GUIDs. Create and update requests use the same validated fields:
 
-| Field | Validation |
-| --- | --- |
-| `title` | Required, 3–120 characters |
-| `clientName` | Required, up to 120 characters |
-| `rawRequest` | Required, 10–6,000 characters |
-| `status` | `Draft`, `InReview`, or `Final` |
+| Field        | Validation                      |
+| ------------ | ------------------------------- |
+| `title`      | Required, 3–120 characters      |
+| `clientName` | Required, up to 120 characters  |
+| `rawRequest` | Required, 10–6,000 characters   |
+| `status`     | `Draft`, `InReview`, or `Final` |
 
 Returned project records also include `id`, `createdAtUtc`, and `updatedAtUtc`. ASP.NET Core validates request DTOs and returns validation errors for invalid input. After a successful PUT, the frontend fetches the project again because the update response has no body.
 
@@ -237,16 +235,16 @@ Planned increments:
 
 ## Troubleshooting
 
-| Problem | Check |
-| --- | --- |
+| Problem                                     | Check                                                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | Browser refuses the connection on port 4200 | Run `npm.cmd start` inside `frontend`, wait for the local URL, and leave the terminal open |
-| API is unavailable | Check the backend terminal, port 5050, and `frontend/proxy.conf.json` |
-| SQLite reports a missing Projects table | Run `dotnet ef database update` in the backend folder before starting the API |
-| npm cannot find `package.json` | Run the command in `frontend`; avoid an extra nested `frontend/frontend` folder |
-| PowerShell blocks `npm.ps1` | Use `npm.cmd` and `npx.cmd` as shown above |
-| A local port is already in use | Use the existing development server or stop its terminal before starting another instance |
-| A proposal misses a recent change | Save a new version before exporting |
-| Drafts are missing in another browser | Browser storage is local to the profile, origin, and selected workspace |
+| API is unavailable                          | Check the backend terminal, port 5050, and `frontend/proxy.conf.json`                      |
+| SQLite reports a missing Projects table     | Run `dotnet ef database update` in the backend folder before starting the API              |
+| npm cannot find `package.json`              | Run the command in `frontend`; avoid an extra nested `frontend/frontend` folder            |
+| PowerShell blocks `npm.ps1`                 | Use `npm.cmd` and `npx.cmd` as shown above                                                 |
+| A local port is already in use              | Use the existing development server or stop its terminal before starting another instance  |
+| A proposal misses a recent change           | Save a new version before exporting                                                        |
+| Drafts are missing in another browser       | Browser storage is local to the profile, origin, and selected workspace                    |
 
 ## Screenshots and documentation
 
