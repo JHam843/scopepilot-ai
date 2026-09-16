@@ -1,0 +1,372 @@
+<a class="back-link" routerLink="/projects">← Project scopes</a>
+@if (loading()) {
+  <div class="empty-state" role="status">
+    <span class="spinner"></span>
+    <p>Opening your project…</p>
+  </div>
+} @else if (!project()) {
+  <div class="panel empty-state">
+    <p class="error-text" role="alert">{{ error() }}</p>
+    <button class="button primary" (click)="load()">Try again</button>
+  </div>
+} @else {
+  @if (project(); as p) {
+    <section class="page-heading compact">
+      <div>
+        <p class="eyebrow">{{ p.clientName }}</p>
+        <h1 class="project-title">{{ p.title }}</h1>
+        <p class="muted">
+          Updated {{ p.updatedAtUtc | date: 'mediumDate' }} <span class="separator">·</span>
+          <span class="badge" [attr.data-status]="p.status">{{
+            p.status === 'InReview' ? 'In review' : p.status
+          }}</span>
+        </p>
+      </div>
+      <div class="button-group">
+        <a class="button secondary" [routerLink]="['/projects', p.id, 'versions']"
+          >Version history</a
+        ><button class="button primary" (click)="generate()" [disabled]="busy()">
+          {{
+            busy() ? 'Working…' : hasScope() ? '↻ Regenerate mock scope' : '✳ Generate mock scope'
+          }}
+        </button>
+      </div>
+    </section>
+    <div class="notice mode-notice">
+      <span class="tiny-tag">MOCK GENERATOR</span
+      ><span
+        >Template-based suggestions for review. Scope drafts and versions are saved in this browser;
+        project details use your selected workspace.</span
+      >
+    </div>
+    @if (error()) {
+      <p class="alert error" role="alert">{{ error() }}</p>
+    }
+    @if (message()) {
+      <p class="alert success" role="status">{{ message() }}</p>
+    }
+    <details class="panel project-details" [open]="!hasScope()">
+      <summary>Project details & original request <span>Edit intake</span></summary>
+      <form [formGroup]="projectForm" (ngSubmit)="saveProject()">
+        <div class="form-grid">
+          <label>Project name<input formControlName="title" maxlength="120" /></label
+          ><label>Client name<input formControlName="clientName" maxlength="120" /></label>
+        </div>
+        <label
+          >Original request<textarea
+            rows="5"
+            formControlName="rawRequest"
+            maxlength="6000"
+          ></textarea>
+        </label>
+        <div class="details-actions">
+          <label
+            >Status<select formControlName="status">
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ status === 'InReview' ? 'In review' : status }}</option>
+              }
+            </select></label
+          ><button class="button secondary" type="submit" [disabled]="busy() || !projectForm.dirty">
+            Save project details
+          </button>
+        </div>
+      </form>
+    </details>
+    @if (!hasScope()) {
+      <section class="panel generation-empty">
+        <div class="generation-icon" aria-hidden="true">✳</div>
+        <p class="eyebrow">THE NEXT STEP</p>
+        <h2>Turn the request into a starting point.</h2>
+        <p>
+          Generate a mock scope with requirements, stories, acceptance criteria, and a phased
+          delivery plan. Every section stays editable.
+        </p>
+        <button class="button primary" (click)="generate()" [disabled]="busy()">
+          {{ busy() ? 'Preparing draft…' : 'Generate mock scope →' }}</button
+        ><small>No API key needed. Suggestions are templates, not live AI output.</small>
+      </section>
+    } @else {
+      <nav class="editor-tabs" aria-label="Scope sections">
+        @for (item of tabs; track item.key) {
+          <button
+            type="button"
+            [class.active]="tab() === item.key"
+            [attr.aria-current]="tab() === item.key ? 'page' : null"
+            (click)="tab.set(item.key)"
+          >
+            {{ item.label }}
+            @if (item.key === 'stories') {
+              <span>{{ scope.controls.stories.length }}</span>
+            }
+          </button>
+        }
+      </nav>
+      <form class="scope-body" [formGroup]="scope" (ngSubmit)="$event.preventDefault()">
+        @if (tab() === 'overview') {
+          <div class="editor-grid">
+            <section class="panel form-panel">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">THE BIG PICTURE</p>
+                  <h2>Project summary</h2>
+                </div>
+                <span class="tiny-tag">EDITABLE</span>
+              </div>
+              <label
+                ><span class="sr-only">Project summary</span
+                ><textarea formControlName="summary" rows="5" maxlength="4000"></textarea>
+              </label>
+              <div class="section-fields">
+                @for (section of sections; track section.key) {
+                  <label
+                    >{{ section.label
+                    }}<textarea [formControlName]="section.key" rows="3" maxlength="6000"></textarea
+                    ><span class="field-hint">One item per line.</span></label
+                  >
+                }
+              </div>
+            </section>
+            <aside class="panel side-panel">
+              <span class="small-orbit">✳</span>
+              <h3>Make it your own.</h3>
+              <p>
+                Review assumptions, remove anything outside the brief, and make requirements
+                specific enough to discuss.
+              </p>
+              <hr />
+              <h4>A good scope answers</h4>
+              <ul>
+                <li>Who is this for?</li>
+                <li>What must it do?</li>
+                <li>What can wait?</li>
+                <li>What is still unknown?</li>
+              </ul>
+              <div class="notice">
+                A structured draft can still be wrong. Client review is part of the workflow.
+              </div>
+            </aside>
+          </div>
+        }
+        @if (tab() === 'stories') {
+          <section class="section-heading">
+            <div>
+              <h2>From requirements to real work.</h2>
+              <p>Give each story a clear outcome and testable acceptance criteria.</p>
+            </div>
+            <button type="button" class="button secondary" (click)="addStory()">
+              + Add story
+            </button>
+          </section>
+          <div formArrayName="stories" class="story-list">
+            @for (
+              story of scope.controls.stories.controls;
+              track story.controls.id.value;
+              let i = $index
+            ) {
+              <article class="panel story-card" [formGroupName]="i">
+                <div class="story-heading">
+                  <span class="story-id">{{ story.controls.id.value }}</span
+                  ><label class="inline-label"
+                    >Phase<select formControlName="phase">
+                      @for (phase of phases; track phase) {
+                        <option [value]="phase">{{ phase }}</option>
+                      }
+                    </select></label
+                  ><button
+                    type="button"
+                    class="button danger-link"
+                    (click)="removeStory(i)"
+                    [attr.aria-label]="'Remove story ' + (i + 1)"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <div class="story-fields">
+                  <label
+                    >As a<input
+                      formControlName="role"
+                      maxlength="200"
+                      placeholder="customer" /></label
+                  ><label
+                    >I want<textarea
+                      formControlName="goal"
+                      rows="2"
+                      maxlength="600"
+                    ></textarea></label
+                  ><label
+                    >So that<textarea formControlName="benefit" rows="2" maxlength="600"></textarea>
+                  </label>
+                </div>
+                <div class="criteria-section" formArrayName="acceptanceCriteria">
+                  <h4>Acceptance criteria</h4>
+                  @for (
+                    criterion of story.controls.acceptanceCriteria.controls;
+                    track criterion;
+                    let j = $index
+                  ) {
+                    <div class="criterion-row">
+                      <span class="criterion-check" aria-hidden="true">✓</span
+                      ><label
+                        ><span class="sr-only">Story {{ i + 1 }}, criterion {{ j + 1 }}</span
+                        ><textarea
+                          [formControlName]="j"
+                          rows="2"
+                          maxlength="2000"
+                        ></textarea></label
+                      ><button
+                        type="button"
+                        class="icon-button"
+                        (click)="removeCriterion(i, j)"
+                        [attr.aria-label]="'Remove criterion ' + (j + 1) + ' from story ' + (i + 1)"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  }
+                  <button type="button" class="text-button" (click)="addCriterion(i)">
+                    + Add acceptance criterion
+                  </button>
+                </div>
+              </article>
+            } @empty {
+              <div class="panel empty-state">
+                <h3>Add your first story.</h3>
+                <button type="button" class="button primary" (click)="addStory()">Add story</button>
+              </div>
+            }
+          </div>
+        }
+        @if (tab() === 'phases') {
+          <section class="section-heading">
+            <div>
+              <h2>A focused first release.</h2>
+              <p>Change a story’s phase in the User stories tab.</p>
+            </div>
+          </section>
+          <div class="phase-grid">
+            @for (phase of phases; track phase; let i = $index) {
+              <section class="panel phase-column">
+                <span class="phase-number">0{{ i + 1 }}</span>
+                <h3>{{ phase }}</h3>
+                <p class="muted">
+                  {{
+                    i === 0
+                      ? 'The essentials to start.'
+                      : i === 1
+                        ? 'Build on the foundation.'
+                        : 'Explore what comes next.'
+                  }}
+                </p>
+                @for (story of scope.controls.stories.controls; track story.controls.id.value) {
+                  @if (story.controls.phase.value === phase) {
+                    <article class="phase-story">
+                      <small>{{ story.controls.id.value }}</small>
+                      <p>{{ story.controls.goal.value || 'Untitled story' }}</p>
+                    </article>
+                  }
+                }
+              </section>
+            }
+          </div>
+          <section class="panel form-panel estimate-panel">
+            <h2>Reviewed effort estimate</h2>
+            <p class="muted">
+              Optional. Enter your own range in developer-days after reviewing the requirements.
+            </p>
+            <div class="form-grid">
+              <label
+                >Lower estimate<input
+                  type="number"
+                  min="0"
+                  max="3650"
+                  step="0.5"
+                  formControlName="estimateLow" /></label
+              ><label
+                >Upper estimate<input
+                  type="number"
+                  min="0"
+                  max="3650"
+                  step="0.5"
+                  formControlName="estimateHigh"
+              /></label>
+            </div>
+            <label
+              >Estimate assumptions<textarea
+                formControlName="estimateNotes"
+                rows="3"
+                maxlength="2000"
+              ></textarea>
+            </label>
+          </section>
+        }
+        @if (tab() === 'questions') {
+          <section class="panel form-panel">
+            <div class="section-heading">
+              <div>
+                <h2>Good questions prevent surprises.</h2>
+                <p>Rule-based suggestions highlight common gaps in the intake.</p>
+              </div>
+              <button class="button secondary" type="button" (click)="askQuestions()">
+                Ask clarifying questions
+              </button>
+            </div>
+            <label
+              >Questions for the client<textarea
+                formControlName="questions"
+                rows="8"
+                maxlength="6000"
+              ></textarea
+              ><span class="field-hint"
+                >One question per line. Existing questions are preserved when suggestions are
+                added.</span
+              ></label
+            ><label
+              >Client answers<textarea
+                formControlName="clientAnswers"
+                rows="6"
+                maxlength="4000"
+                placeholder="Record answers and decisions here. These are included in saved versions and exports."
+              ></textarea>
+            </label>
+          </section>
+        }
+        @if (tab() === 'proposal') {
+          @if (latestVersion(); as version) {
+            <div class="section-heading">
+              <div>
+                <h2>Proposal preview</h2>
+                <p>
+                  Showing saved version {{ version.number }}. Save a new version to include newer
+                  edits.
+                </p>
+              </div>
+              <button class="button primary" type="button" (click)="exportLatest()">
+                ↓ Download Markdown
+              </button>
+            </div>
+            <app-scope-preview [version]="version" />
+          } @else {
+            <div class="panel empty-state">
+              <h3>Save a version to preview your proposal.</h3>
+              <p>Your export will use the exact reviewed snapshot.</p>
+            </div>
+          }
+        }
+      </form>
+      <div class="save-bar">
+        <div>
+          <strong>{{ scope.dirty ? 'Unsaved scope changes' : 'Scope draft saved' }}</strong
+          ><small>Scope data stays in this browser.</small>
+        </div>
+        <label class="version-note"
+          ><span class="sr-only">Version note</span
+          ><input
+            [formControl]="versionNote"
+            maxlength="200"
+            placeholder="Version note (optional)" /></label
+        ><button class="button secondary" type="button" (click)="saveDraft()">Save draft</button
+        ><button class="button primary" type="button" (click)="saveVersion()">Save version</button>
+      </div>
+    }
+  }
+}

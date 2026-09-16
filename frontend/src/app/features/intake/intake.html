@@ -1,0 +1,140 @@
+<a class="back-link" routerLink="/projects">← Project scopes</a>
+<section class="page-heading compact">
+  <div>
+    <p class="eyebrow">MAKE ROOM FOR A NEW IDEA</p>
+    <h1>Let’s understand the project.</h1>
+    <p class="lede">A few useful details make a much better starting point.</p>
+  </div>
+  <span class="tiny-tag">NEW SCOPE</span>
+</section>
+<div class="wizard-layout">
+  <aside class="wizard-steps">
+    <ol>
+      @for (
+        label of ['The basics', 'The request', 'Review & create'];
+        track label;
+        let i = $index
+      ) {
+        <li
+          [class.current]="step() === i"
+          [class.complete]="step() > i"
+          [attr.aria-current]="step() === i ? 'step' : null"
+        >
+          <span>{{ step() > i ? '✓' : i + 1 }}</span>
+          <div>
+            {{ label
+            }}<small>{{
+              i === 0
+                ? 'Who are we building for?'
+                : i === 1
+                  ? 'What needs to change?'
+                  : 'A quick check before we start.'
+            }}</small>
+          </div>
+        </li>
+      }
+    </ol>
+    <p class="aside-tip">
+      Clarity beats completeness.<br />Unknown details can become questions for the client.
+    </p>
+  </aside>
+  <form class="panel form-panel" [formGroup]="form" (ngSubmit)="step() === 2 ? save() : next()">
+    @if (step() === 0) {
+      <p class="eyebrow">STEP 01 / 03</p>
+      <h2>Start with the basics.</h2>
+      <p class="muted">Give the project a name that makes it easy to find.</p>
+      <label
+        >Project name <span class="required">*</span
+        ><input
+          formControlName="title"
+          placeholder="e.g. Barber booking platform"
+          maxlength="120"
+          autocomplete="off"
+      /></label>
+      @if (form.controls.title.touched && form.controls.title.invalid) {
+        <p class="field-error">Use a project name between 3 and 120 characters.</p>
+      }
+      <label
+        >Client name <span class="required">*</span
+        ><input
+          formControlName="clientName"
+          placeholder="e.g. Downtown Barber"
+          maxlength="120"
+          autocomplete="organization"
+      /></label>
+      @if (form.controls.clientName.touched && form.controls.clientName.invalid) {
+        <p class="field-error">Enter the client’s name.</p>
+      }
+    }
+    @if (step() === 1) {
+      <p class="eyebrow">STEP 02 / 03</p>
+      <h2>What does the client need?</h2>
+      <p class="muted">Use their own words. We’ll organize the details next.</p>
+      <label
+        >Client request <span class="required">*</span
+        ><textarea
+          rows="7"
+          formControlName="rawRequest"
+          maxlength="5000"
+          placeholder="Describe the problem, desired outcome, and must-have features…"
+        ></textarea>
+      </label>
+      <p class="field-hint">{{ form.controls.rawRequest.value.length }} / 5,000 characters</p>
+      @if (form.controls.rawRequest.touched && form.controls.rawRequest.invalid) {
+        <p class="field-error">Describe the request in at least 10 characters.</p>
+      }
+      <div class="form-grid">
+        <label
+          >Intended users<input
+            formControlName="users"
+            placeholder="Customers, staff, managers…"
+            maxlength="200" /></label
+        ><label
+          >Known integrations<input
+            formControlName="integrations"
+            placeholder="Existing tools or services"
+            maxlength="200"
+        /></label>
+      </div>
+      <label
+        >Constraints or exclusions<textarea
+          rows="3"
+          formControlName="constraints"
+          maxlength="400"
+          placeholder="Known budget, timeline, or work outside the scope"
+        ></textarea>
+      </label>
+    }
+    @if (step() === 2) {
+      <p class="eyebrow">STEP 03 / 03</p>
+      <h2>Ready to shape the scope.</h2>
+      <dl class="review-details">
+        <dt>Project</dt>
+        <dd>{{ form.controls.title.value }}</dd>
+        <dt>Client</dt>
+        <dd>{{ form.controls.clientName.value }}</dd>
+        <dt>Request and context</dt>
+        <dd class="preserve-lines">{{ requestText() }}</dd>
+      </dl>
+      <div class="notice">
+        Creating a project saves the intake. You can then generate and edit a mock scope in the
+        project workspace.
+      </div>
+    }
+    @if (error()) {
+      <p class="alert error" role="alert">{{ error() }}</p>
+    }
+    <div class="form-actions">
+      @if (step() > 0) {
+        <button type="button" class="button secondary" (click)="back()" [disabled]="saving()">
+          ← Back
+        </button>
+      } @else {
+        <a class="button subtle" routerLink="/projects">Cancel</a>
+      }
+      <button class="button primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Creating…' : step() === 2 ? 'Create project ↗' : 'Continue →' }}
+      </button>
+    </div>
+  </form>
+</div>

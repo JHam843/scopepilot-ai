@@ -1,0 +1,144 @@
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">THE START OF SOMETHING GOOD</p>
+    <h1>Every great project<br />starts with <em>clarity.</em></h1>
+    <p class="lede">Capture the request. Shape the scope. Start with confidence.</p>
+  </div>
+  <a class="button primary" routerLink="/projects/new"
+    ><span aria-hidden="true">+</span> Create a scope</a
+  >
+</section>
+<div class="stats-grid">
+  <div class="stat">
+    <span>Total projects</span><strong>{{ loading() ? '—' : projects().length }}</strong
+    ><small>Your scoping workspace</small>
+  </div>
+  <div class="stat">
+    <span>In review</span><strong>{{ loading() ? '—' : inReview() }}</strong
+    ><small>Ready for a conversation</small>
+  </div>
+  <div class="stat">
+    <span>Finalized</span><strong>{{ loading() ? '—' : final() }}</strong
+    ><small>Marked final by you</small>
+  </div>
+</div>
+<section class="panel projects-panel">
+  <div class="section-heading">
+    <div>
+      <h2>Project scopes</h2>
+      <p>Your ideas, taking shape.</p>
+    </div>
+    <button class="button subtle" (click)="load()" [disabled]="loading()">↻ Refresh</button>
+  </div>
+  <div class="filters">
+    <label class="search-field"
+      ><span class="sr-only">Search projects</span><span aria-hidden="true">⌕</span
+      ><input
+        placeholder="Search by project or client…"
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)" /></label
+    ><label
+      ><span class="sr-only">Filter by status</span
+      ><select [ngModel]="status()" (ngModelChange)="status.set($event)">
+        <option value="">All statuses</option>
+        @for (state of statuses; track state) {
+          <option [value]="state">{{ statusLabel(state) }}</option>
+        }
+      </select></label
+    >
+  </div>
+  @if (loading()) {
+    <div class="empty-state" role="status">
+      <span class="spinner"></span>
+      <p>Loading your projects…</p>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <h3>Let’s reconnect your workspace.</h3>
+      <p class="error-text" role="alert">{{ error() }}</p>
+      <button class="button primary" (click)="load()">Try again</button
+      ><button class="button secondary" (click)="workspace.setMode('demo')">
+        Open sample workspace
+      </button>
+    </div>
+  } @else if (!filtered().length) {
+    <div class="empty-state">
+      <h3>{{ projects().length ? 'No matching projects' : 'Your next idea belongs here.' }}</h3>
+      <p>
+        {{
+          projects().length
+            ? 'Try another search or status.'
+            : 'Create your first scope or start with an example below.'
+        }}
+      </p>
+      <a class="button secondary" routerLink="/projects/new">Create a scope</a>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>PROJECT</th>
+            <th>CLIENT</th>
+            <th>STATUS</th>
+            <th>UPDATED</th>
+            <th><span class="sr-only">Open project</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (project of filtered(); track project.id; let index = $index) {
+            <tr>
+              <td>
+                <a class="project-link" [routerLink]="['/projects', project.id]"
+                  ><span
+                    class="project-icon"
+                    [class.lilac]="index % 3 === 1"
+                    [class.peach]="index % 3 === 2"
+                    >{{ project.title.slice(0, 1) }}</span
+                  ><span>{{ project.title }}<small>Project scope</small></span></a
+                >
+              </td>
+              <td>{{ project.clientName }}</td>
+              <td>
+                <span class="badge" [attr.data-status]="project.status">{{
+                  statusLabel(project.status)
+                }}</span>
+              </td>
+              <td class="muted">{{ project.updatedAtUtc | date: 'MMM d, y' }}</td>
+              <td>
+                <a
+                  class="row-arrow"
+                  [routerLink]="['/projects', project.id]"
+                  [attr.aria-label]="'Open ' + project.title"
+                  >↗</a
+                >
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+<section class="samples-section">
+  <div class="section-heading">
+    <div>
+      <h2>A little inspiration</h2>
+      <p>Start with an example request, then make it yours.</p>
+    </div>
+    <span class="tiny-tag">3 STARTER PROJECTS</span>
+  </div>
+  <div class="sample-grid">
+    @for (sample of samples; track sample.key) {
+      <a class="sample-card" routerLink="/projects/new" [queryParams]="{ sample: sample.key }"
+        ><span class="sample-icon" [class]="'sample-icon ' + sample.tone">{{
+          sample.initials
+        }}</span
+        ><span class="sample-category">{{ sample.category }}</span>
+        <h3>{{ sample.title }}</h3>
+        <p>{{ sample.rawRequest }}</p>
+        <span class="sample-cta">Use this example <span aria-hidden="true">↗</span></span></a
+      >
+    }
+  </div>
+</section>

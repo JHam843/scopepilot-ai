@@ -1,0 +1,68 @@
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Workspace navigation">
+    <a class="brand" routerLink="/projects"
+      ><span class="brand-icon">S<span>↗</span></span
+      ><span>ScopePilot<span class="brand-sub">FROM IDEA TO CLARITY</span></span></a
+    >
+    <p class="nav-label">YOUR WORKSPACE</p>
+    <nav>
+      <a
+        routerLink="/projects"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ><span aria-hidden="true">▦</span> Project scopes</a
+      ><a routerLink="/projects/new" routerLinkActive="active"
+        ><span aria-hidden="true">+</span> New scope</a
+      >
+    </nav>
+    <div class="sidebar-note">
+      <span class="small-orbit" aria-hidden="true">✳</span>
+      <h3>A clearer starting point.</h3>
+      <p>Turn a rough request into work you can review, refine, and share.</p>
+    </div>
+    <div class="sidebar-bottom">
+      <span class="avatar">SP</span>
+      <div>Portfolio workspace<small>Angular + ASP.NET Core</small></div>
+    </div>
+  </aside>
+  <div class="main-shell">
+    <header class="topbar">
+      <div class="breadcrumb">Workspace <span>/</span> ScopePilot AI</div>
+      <div class="workspace-switch" aria-label="Project data source">
+        <button
+          type="button"
+          [class.selected]="workspace.mode() === 'api'"
+          [attr.aria-pressed]="workspace.mode() === 'api'"
+          (click)="switchMode('api')"
+        >
+          .NET API</button
+        ><button
+          type="button"
+          [class.selected]="workspace.mode() === 'demo'"
+          [attr.aria-pressed]="workspace.mode() === 'demo'"
+          (click)="switchMode('demo')"
+        >
+          Sample workspace
+        </button>
+      </div>
+    </header>
+    <main id="main-content" tabindex="-1">
+      @if (error()) {
+        <p class="alert error" role="alert">{{ error() }}</p>
+      }
+      @if (storage.warning()) {
+        <p class="alert warning" role="status">{{ storage.warning() }}</p>
+      }
+      <router-outlet />
+    </main>
+    <footer>
+      ScopePilot AI <span>Built for the work before the work.</span
+      ><span class="footer-mode">{{
+        workspace.mode() === 'api'
+          ? 'Projects connected to your .NET API'
+          : 'Sample projects stored in this browser'
+      }}</span>
+    </footer>
+  </div>
+</div>

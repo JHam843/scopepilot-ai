@@ -1,0 +1,90 @@
+@if (loading()) {
+  <div class="empty-state" role="status">Loading versions…</div>
+} @else if (error()) {
+  <div class="panel empty-state">
+    <p class="error-text" role="alert">{{ error() }}</p>
+    <button class="button primary" (click)="load()">Try again</button>
+  </div>
+} @else if (project(); as p) {
+  <a class="back-link" [routerLink]="['/projects', p.id]">← Back to scope</a>
+  <section class="page-heading compact">
+    <div>
+      <p class="eyebrow">{{ p.title }}</p>
+      <h1>A record of your thinking.</h1>
+      <p class="lede">Compare reviewed snapshots. Earlier versions stay unchanged.</p>
+    </div>
+    <span class="tiny-tag">{{ versions().length }} SAVED VERSIONS</span>
+  </section>
+  <div class="notice">
+    Versions are stored in this browser, separately for each workspace. Download Markdown to keep a
+    portable copy.
+  </div>
+  @if (!versions().length) {
+    <section class="panel empty-state">
+      <h3>No saved versions yet.</h3>
+      <p>Open the scope editor and save your first version.</p>
+      <a class="button primary" [routerLink]="['/projects', p.id]">Open editor</a>
+    </section>
+  } @else {
+    <section class="panel version-list">
+      <h2>Saved snapshots</h2>
+      @for (version of versions(); track version.number) {
+        <div class="version-row">
+          <span class="version-number">v{{ version.number }}</span>
+          <div>
+            <strong>{{ version.note || 'Reviewed scope' }}</strong
+            ><small>{{ version.createdAtUtc | date: 'medium' }}</small>
+          </div>
+          <button
+            class="button subtle"
+            (click)="download(version)"
+            [attr.aria-label]="'Download version ' + version.number"
+          >
+            ↓ Markdown
+          </button>
+        </div>
+      }
+    </section>
+    @if (versions().length === 1) {
+      <p class="muted">
+        Save a second version to compare revisions. Both panels currently show your first version.
+      </p>
+    }
+    <div class="comparison-grid">
+      <section>
+        <label class="compare-select"
+          >Earlier snapshot<select
+            [ngModel]="leftNumber()"
+            (ngModelChange)="leftNumber.set(+$event)"
+          >
+            @for (version of versions(); track version.number) {
+              <option [value]="version.number">
+                Version {{ version.number }} — {{ version.note || 'Reviewed scope' }}
+              </option>
+            }
+          </select></label
+        >
+        @if (left(); as version) {
+          <app-scope-preview [version]="version" />
+        }
+      </section>
+      <section>
+        <label class="compare-select"
+          >Later snapshot<select
+            [ngModel]="rightNumber()"
+            (ngModelChange)="rightNumber.set(+$event)"
+          >
+            @for (version of versions(); track version.number) {
+              <option [value]="version.number">
+                Version {{ version.number }} — {{ version.note || 'Reviewed scope' }}
+              </option>
+            }
+          </select></label
+        >
+        @if (right(); as version) {
+          <app-scope-preview [version]="version" />
+        }
+      </section>
+    </div>
+  }
+}

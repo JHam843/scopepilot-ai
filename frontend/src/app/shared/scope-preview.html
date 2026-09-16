@@ -1,0 +1,50 @@
+<article class="proposal-document">
+  <div class="proposal-heading">
+    <p class="eyebrow">SCOPEPILOT / PROJECT PROPOSAL</p>
+    <h2>{{ version().project.title }}</h2>
+    <p>{{ version().project.clientName }} · Version {{ version().number }}</p>
+    <small>Saved {{ version().createdAtUtc | date: 'medium' }}</small>
+  </div>
+  <p class="notice">
+    Mock-generated starting point. Requirements and estimates need client review.
+  </p>
+  <h3>Summary</h3>
+  <p class="preserve-lines">{{ version().document.summary }}</p>
+  <h3>Original request</h3>
+  <p class="preserve-lines">{{ version().project.rawRequest }}</p>
+  @for (section of sections; track section.key) {
+    <h3>{{ section.label }}</h3>
+    <ul>
+      @for (item of version().document[section.key]; track $index) {
+        <li>{{ item }}</li>
+      } @empty {
+        <li class="muted">None recorded.</li>
+      }
+    </ul>
+  }
+  <h3>User stories & delivery phases</h3>
+  @for (story of version().document.stories; track story.id) {
+    <section class="proposal-story">
+      <p>
+        <strong>{{ story.id }}</strong> <span class="badge">{{ story.phase }}</span>
+      </p>
+      <p>As a {{ story.role }}, I want {{ story.goal }}, so that {{ story.benefit }}.</p>
+      <ul>
+        @for (criterion of story.acceptanceCriteria; track $index) {
+          <li>{{ criterion }}</li>
+        }
+      </ul>
+    </section>
+  }
+  <h3>Client clarification answers</h3>
+  <p class="preserve-lines">{{ version().document.clientAnswers || 'Not supplied.' }}</p>
+  <h3>Reviewed estimate</h3>
+  <p>
+    @if (version().document.estimateLow !== null) {
+      {{ version().document.estimateLow }}–{{ version().document.estimateHigh }} developer-days
+    } @else {
+      Not estimated.
+    }
+  </p>
+  <p class="preserve-lines">{{ version().document.estimateNotes }}</p>
+</article>
